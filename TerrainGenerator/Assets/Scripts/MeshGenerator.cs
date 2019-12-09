@@ -10,6 +10,8 @@ public class MeshGenerator : MonoBehaviour
     Vector3[] vertices;
     int[] triangles;
 
+
+
     public int seed;
 
     public int xSize =256;
@@ -34,19 +36,53 @@ public class MeshGenerator : MonoBehaviour
 
     System.Random rng;
 
+    public TerrainType[] regions;
+
+
     void Start()
     {
-       rng = new System.Random(seed);
+        rng = new System.Random(seed);
         mainOffsetX = (float)rng.Next(0, 10000);
         mainOffsetZ = (float)rng.Next(0, 10000);
         secondaryOffsetX = (float)rng.Next(0, 10000);
         secondaryOffsetZ = (float)rng.Next(0, 10000);
         mesh = new Mesh();
+
         GetComponent<MeshFilter>().mesh = mesh;
         renderr = GetComponent<Renderer>();
+
         renderr.material.mainTexture = GenerateTexture();
         CreateShape();
+        UpdateMesh();
+        renderr.material.mainTexture = GenerateColorTexture();      
     }
+
+     private Texture2D GenerateColorTexture()
+     {
+        Color[] colourMap = new Color[xSize * zSize];
+
+        Texture2D texture = new Texture2D(xSize, zSize);
+        texture.filterMode = FilterMode.Point;
+        for (int i = 0, z = 0; z < zSize; z++)
+        {
+            for (int x = 0; x < xSize; x++)
+            {
+                float currentHeight = vertices[i].y;
+                for(int j=0 ;j<regions.Length;j++)
+                {
+                    if(currentHeight <= regions[j].height)
+                    {
+                        colourMap[i] = regions[j].colour;
+                        break;
+                    }
+                }
+                i++;
+            }
+        }
+        texture.SetPixels(colourMap);
+        texture.Apply();
+        return texture;
+     }
 
     private Texture GenerateTexture()
     {
@@ -56,7 +92,6 @@ public class MeshGenerator : MonoBehaviour
         {
             for(int z = 0;z< zSize;z++)
             {
-
                 Color color = CalculateColor(x, z);
                 texture.SetPixel(x, z, color);
             }
@@ -77,7 +112,7 @@ public class MeshGenerator : MonoBehaviour
     void Update()
     {
         //renderr.material.mainTexture = GenerateTexture();
-        UpdateMesh();
+        //UpdateMesh();
     }
 
     void CreateShape()
@@ -89,7 +124,7 @@ public class MeshGenerator : MonoBehaviour
             for(int x = 0 ; x <= xSize ;x++)
             {
 
-                float y = Mathf.PerlinNoise(((float)x/(float)xSize  ) * mainScale + mainOffsetX, ((float)z / (float)zSize * mainScale) + mainOffsetZ) * mainNoiseMultiplicator;
+                float y = Mathf.PerlinNoise(((float)x/(float)xSize) * mainScale + mainOffsetX, ((float)z / (float)zSize * mainScale) + mainOffsetZ) * mainNoiseMultiplicator;
                 if(y > maxHeight)
                 {
                     y = maxHeight;
@@ -132,6 +167,14 @@ public class MeshGenerator : MonoBehaviour
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
+        Vector2[] uvs = new Vector2[vertices.Length];
+        int i = 0;
+        while (i < uvs.Length)
+        {
+            uvs[i] = new Vector2(vertices[i].x/xSize, vertices[i].y / zSize );
+            i++;
+        }
+        mesh.uv = uvs;
     }
 
     private void OnDrawGizmos()
@@ -144,5 +187,13 @@ public class MeshGenerator : MonoBehaviour
         {
             Gizmos.DrawSphere(vertices[i], .1f);
         }
+    }
+    
+    [System.Serializable]
+    public struct TerrainType
+    {
+        public string name;
+        public float height;
+        public Color colour;
     }
 }
