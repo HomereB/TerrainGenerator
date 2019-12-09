@@ -36,7 +36,10 @@ public class MeshGenerator : MonoBehaviour
     void Start()
     {
        rng = new System.Random(seed);
-
+        mainOffsetX = (float)rng.Next(0, 10000);
+        mainOffsetZ = (float)rng.Next(0, 10000);
+        secondaryOffsetX = (float)rng.Next(0, 10000);
+        secondaryOffsetZ = (float)rng.Next(0, 10000);
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         renderr = GetComponent<Renderer>();
@@ -52,8 +55,7 @@ public class MeshGenerator : MonoBehaviour
         {
             for(int z = 0;z< zSize;z++)
             {
-                secondaryOffsetX = (float)rng.Next(-100000, 100000)/1000000.0f;
-                secondaryOffsetZ = (float)rng.Next(-100000, 100000) / 1000000.0f;
+
                 Color color = CalculateColor(x, z);
                 texture.SetPixel(x, z, color);
             }
@@ -85,9 +87,8 @@ public class MeshGenerator : MonoBehaviour
         {
             for(int x = 0 ; x <= xSize ;x++)
             {
-                mainOffsetX = (float)rng.Next(-100000, 100000) / 10000000.0f;
-                mainOffsetZ = (float)rng.Next(-100000, 100000) / 10000000.0f;
-                float y = Mathf.PerlinNoise(((float)x/(float)xSize  + mainOffsetX) * mainScale, ((float)z / (float)zSize * mainScale)  + mainOffsetZ) * mainNoiseMultiplicator;
+
+                float y = Mathf.PerlinNoise(((float)x/(float)xSize  ) * mainScale + mainOffsetX, ((float)z / (float)zSize * mainScale) + mainOffsetZ) * mainNoiseMultiplicator;
                 Debug.Log(y);
                 vertices[i] = new Vector3(x, maxHeight*y + (texture.GetPixel(x,z).r * secondaryNoiseMultiplicator) , z);
                 i++;
