@@ -15,6 +15,7 @@ public class MeshGenerator : MonoBehaviour
     public int xSize =256;
     public int zSize = 256;
     public int maxHeight;
+    public int minHeight;
 
     public float mainOffsetX;
     public float mainOffsetZ;
@@ -89,8 +90,15 @@ public class MeshGenerator : MonoBehaviour
             {
 
                 float y = Mathf.PerlinNoise(((float)x/(float)xSize  ) * mainScale + mainOffsetX, ((float)z / (float)zSize * mainScale) + mainOffsetZ) * mainNoiseMultiplicator;
-                Debug.Log(y);
-                vertices[i] = new Vector3(x, maxHeight*y + (texture.GetPixel(x,z).r * secondaryNoiseMultiplicator) , z);
+                if(y > maxHeight)
+                {
+                    y = maxHeight;
+                }
+                else if(y < minHeight)
+                {
+                    y = minHeight;
+                }
+                vertices[i] = new Vector3(x, y + (texture.GetPixel(x,z).r * secondaryNoiseMultiplicator) , z);
                 i++;
             }
         }
