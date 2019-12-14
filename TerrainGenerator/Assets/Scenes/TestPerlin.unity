@@ -215,12 +215,12 @@ PrefabInstance:
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
       propertyPath: maxHeight
-      value: 40
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
       propertyPath: mainNoiseMultiplicator
-      value: 2
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
@@ -230,7 +230,7 @@ PrefabInstance:
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
       propertyPath: mainScale
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
@@ -240,7 +240,17 @@ PrefabInstance:
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
       propertyPath: seed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
+        type: 3}
+      propertyPath: heightTolerance
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
+        type: 3}
+      propertyPath: nbSources
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b10eaa1e5eda31346b9c52a984da7824, type: 3}
