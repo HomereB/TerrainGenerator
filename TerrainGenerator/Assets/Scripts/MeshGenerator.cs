@@ -41,8 +41,13 @@ public class MeshGenerator : MonoBehaviour
     [Space(10)]
     public int nbSources;
     public List<Vector2Int> sourceCoordinates;
-    public float heightTolerance;
+    public float downhillHeightTolerance;
     public List<List<int>> flowGraphs;
+
+    [Space(10)]
+    public float uphillHeightTolerance;
+    public List<float> riverDepth;
+    public List<int> riverWidth;
 
     Mesh mesh;
     Vector3[] vertices;
@@ -70,13 +75,33 @@ public class MeshGenerator : MonoBehaviour
         sourceCoordinates.Add(new Vector2Int(24, 24));
         //renderr.sharedMaterial.mainTexture = GenerateColorTexture();
         flowGraphs = new List<List<int>>(sourceCoordinates.Count);
+
         for(int i = 0; i<sourceCoordinates.Count;i++)
         {
             flowGraphs.Add(new List<int>());
             GenerateFlowingGraph(i);
-            vertices[(xSize+1)* sourceCoordinates[0].y+ sourceCoordinates[0].x].y -=5;
+            //vertices[(xSize+1)* sourceCoordinates[0].y+ sourceCoordinates[0].x].y -=5;
+        }
+
+        riverDepth.Add(5);
+        riverWidth.Add(5);
+
+        for(int i =0; i< flowGraphs.Count;i++)
+        {
+            GenerateRiverDepth(i);
         }
         UpdateMesh();
+    }
+
+    private void GenerateRiverDepth(int flowGraphIndex)
+    {
+        foreach(int index in flowGraphs[flowGraphIndex])
+        {
+            for(int i = -riverWidth[flowGraphIndex] ;i<= riverWidth[flowGraphIndex];i++)
+            {
+                vertices[index + i].y -= ((float)Mathf.Abs(i)) / riverDepth[flowGraphIndex];
+            }
+        }
     }
 
     private void GenerateFlowingGraph(int sourceIndex)
@@ -103,7 +128,7 @@ public class MeshGenerator : MonoBehaviour
                     
                     if(i != 0 && j != 0 && riverPoints[0].x + i + ((riverPoints[0].y + j) * (xSize + 1))>=0 && riverPoints[0].x + i + ((riverPoints[0].y + j) * (xSize + 1))< (xSize+1)*(zSize+1) )
                     {
-                        if(currentHeight + heightTolerance > vertices[riverPoints[0].x + i + ((riverPoints[0].y + j) * (xSize + 1))].y && !exploredIndexes.Contains(riverPoints[0].x + i + ((riverPoints[0].y + j) * (xSize + 1))))
+                        if(currentHeight + downhillHeightTolerance > vertices[riverPoints[0].x + i + ((riverPoints[0].y + j) * (xSize + 1))].y && !exploredIndexes.Contains(riverPoints[0].x + i + ((riverPoints[0].y + j) * (xSize + 1))))
                         {                      
                             currentHeight = vertices[index].y;
                             nextIndexX = riverPoints[0].x + i ;
@@ -125,10 +150,6 @@ public class MeshGenerator : MonoBehaviour
             {
                 break;
             }
-        }
-        foreach(int i in flowGraphs[0])
-        {
-            vertices[i].y -= 2.5f;
         }
     }
 
