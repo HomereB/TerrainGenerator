@@ -199,13 +199,18 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c2418d6c738192441ab979f9b2e7045e, type: 2}
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
+      propertyPath: sourceCoordinates.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
+        type: 3}
       propertyPath: xSize
-      value: 128
+      value: 255
       objectReference: {fileID: 0}
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
       propertyPath: zSize
-      value: 128
+      value: 255
       objectReference: {fileID: 0}
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
@@ -225,12 +230,12 @@ PrefabInstance:
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
       propertyPath: secondaryNoiseMultiplicator
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
       propertyPath: mainScale
-      value: 3
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
         type: 3}
@@ -261,6 +266,26 @@ PrefabInstance:
         type: 3}
       propertyPath: initialdepth
       value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
+        type: 3}
+      propertyPath: sourceCoordinates.Array.data[0].x
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
+        type: 3}
+      propertyPath: sourceCoordinates.Array.data[0].y
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
+        type: 3}
+      propertyPath: sourceCoordinates.Array.data[1].x
+      value: 58
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120151270098282254, guid: b10eaa1e5eda31346b9c52a984da7824,
+        type: 3}
+      propertyPath: sourceCoordinates.Array.data[1].y
+      value: 80
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b10eaa1e5eda31346b9c52a984da7824, type: 3}

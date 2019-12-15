@@ -72,36 +72,74 @@ public class MeshGenerator : MonoBehaviour
         renderr.material.mainTexture = GenerateTexture();
         CreateShape();
 
-        sourceCoordinates.Add(new Vector2Int(24, 24));
+        //sourceCoordinates.Add(new Vector2Int(24, 24));
+        //sourceCoordinates.Add(new Vector2Int(58, 80));
         //renderr.sharedMaterial.mainTexture = GenerateColorTexture();
         flowGraphs = new List<List<int>>(sourceCoordinates.Count);
 
         for(int i = 0; i<sourceCoordinates.Count;i++)
         {
+            //vertices[sourceCoordinates[i].x + sourceCoordinates[i].y * (xSize + 1)].y *= 2;
             flowGraphs.Add(new List<int>());
             GenerateFlowingGraph(i);
-            //vertices[(xSize+1)* sourceCoordinates[0].y+ sourceCoordinates[0].x].y -=5;
         }
 
         riverDepth.Add(5);
         riverWidth.Add(5);
+        riverDepth.Add(5);
+        riverWidth.Add(5);
 
-        for(int i =0; i< flowGraphs.Count;i++)
+        for (int i =0; i< flowGraphs.Count;i++)
         {
             GenerateRiverDepth(i);
         }
+
         UpdateMesh();
+        GetComponent<MeshFilter>().mesh.RecalculateBounds();
     }
 
     private void GenerateRiverDepth(int flowGraphIndex)
     {
-        foreach(int index in flowGraphs[flowGraphIndex])
-        {
+        Dictionary<int,int> nearbynodes = new Dictionary<int, int>();
+        int MaxValue = 0;
+        int MaxIndex = -1;
+        foreach (int index in flowGraphs[flowGraphIndex])
+        { 
             for(int i = -riverWidth[flowGraphIndex] ;i<= riverWidth[flowGraphIndex];i++)
             {
-                vertices[index + i].y -= ((float)Mathf.Abs(i)) / riverDepth[flowGraphIndex];
+                for (int j = -riverWidth[flowGraphIndex]; j <= riverWidth[flowGraphIndex]; j++)
+                {
+                    if(!nearbynodes.ContainsKey(index+j + i*(xSize+1)))
+                    {
+                        nearbynodes.Add(index + j + i * (xSize + 1), 1);
+                    }
+                    else
+                    {
+                        nearbynodes[index + j + i * (xSize + 1)] +=1;
+                    }
+                    if(nearbynodes[index + j + i * (xSize + 1)]>MaxValue)
+                    {
+                        MaxIndex = index + j + i * (xSize + 1);
+                        MaxValue = nearbynodes[index + j + i * (xSize + 1)];
+                    }
+                }
             }
         }
+        foreach (int index in nearbynodes.Keys)
+        {
+            vertices[index].y -= riverDepth[flowGraphIndex] * nearbynodes[index] / MaxValue;
+        }
+
+        //for(int i = -riverWidth[flowGraphIndex] ;i<= riverWidth[flowGraphIndex];i++)
+        //{
+        //    vertices[index + i].y -= riverDepth[flowGraphIndex]*Mathf.Sin(((float)Mathf.Abs(i)) / (float)riverWidth[flowGraphIndex]);
+        //}
+
+        //for (int i = -riverWidth[flowGraphIndex]; i <= riverWidth[flowGraphIndex]; i++)
+        //{
+        //    vertices[index + i*(xSize+1)].y -= riverDepth[flowGraphIndex]* Mathf.Sin(((float)Mathf.Abs(i)) / (float)riverWidth[flowGraphIndex]);
+        //}
+
     }
 
     private void GenerateFlowingGraph(int sourceIndex)
