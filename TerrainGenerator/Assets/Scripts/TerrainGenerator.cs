@@ -5,7 +5,8 @@ using UnityEngine;
 public class TerrainGenerator : MonoBehaviour
 {
 
-    public int width, height, depth, scale;
+    public int width, height, depth;
+    public float scale;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,7 +24,8 @@ public class TerrainGenerator : MonoBehaviour
     {
         terrainData.heightmapResolution = width + 1;
         terrainData.size = new Vector3(width, depth, height);
-        terrainData.SetHeights(0, 0, GenerateHeights());
+        float[,] map = GenerateHeights();
+        terrainData.SetHeights(0, 0, map);
 
         return terrainData;
     }
@@ -44,9 +46,17 @@ public class TerrainGenerator : MonoBehaviour
 
     float CalculateHeight(int x,  int y)
     {
-        float xCoord = (float) x / width * scale;
-        float yCoord = (float) y / height * scale;
+        if (scale <= 0)
+            scale = 0.0001f;
+
+        float xCoord = (float) x /  scale;
+        float yCoord = (float) y /  scale;
 
         return Mathf.PerlinNoise(xCoord, yCoord);
+    }
+
+    void Erode(float[,] map)
+    {
+
     }
 }

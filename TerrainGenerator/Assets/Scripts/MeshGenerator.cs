@@ -12,7 +12,7 @@ public class MeshGenerator : MonoBehaviour
     [Space(10)]
     public int seed;
     [Space(10)]
-    public int xSize =256;
+    public int xSize = 256;
     public int zSize = 256;
     public int maxHeight;
     public int minHeight;
@@ -74,7 +74,6 @@ public class MeshGenerator : MonoBehaviour
 
         //sourceCoordinates.Add(new Vector2Int(24, 24));
         //sourceCoordinates.Add(new Vector2Int(58, 80));
-        //renderr.sharedMaterial.mainTexture = GenerateColorTexture();
         flowGraphs = new List<List<int>>(sourceCoordinates.Count);
 
         for(int i = 0; i<sourceCoordinates.Count;i++)
@@ -89,8 +88,10 @@ public class MeshGenerator : MonoBehaviour
             GenerateRiverDepth(i);
         }
 
-        UpdateMesh();
+        renderr.sharedMaterial.mainTexture = GenerateColorTexture();
         GetComponent<MeshFilter>().mesh.RecalculateBounds();
+        UpdateMesh();
+
     }
 
     private void GenerateRiverDepth(int flowGraphIndex)
@@ -158,15 +159,14 @@ public class MeshGenerator : MonoBehaviour
 
         List<int> exploredIndexes = new List<int>
         {
-            sourceCoordinates[sourceIndex].x+ sourceCoordinates[sourceIndex].y*(xSize+1)
+            sourceCoordinates[sourceIndex].x + sourceCoordinates[sourceIndex].y * (xSize+1)
         };
 
         while(riverPoints.Count!=0)
         {
-            float currentHeight = vertices[riverPoints[0].x+ riverPoints[0].y*(xSize+1)].y;
+            float currentHeight = vertices[riverPoints[0].x + riverPoints[0].y * (xSize + 1)].y;
             int nextIndexX = -1;
             int nextIndexZ = -1;
-            Debug.Log(riverPoints[0].x + riverPoints[0].y * (xSize + 1));
             for(int i = -1 ; i <=  1 ; i++)
             {
                 for (int j = - 1 ; j <= 1 ; j++)
@@ -204,27 +204,28 @@ public class MeshGenerator : MonoBehaviour
 
     private Texture2D GenerateColorTexture()
      {
-        Color[] colourMap = new Color[(xSize+1) * (zSize+1)];
+        Color[] colourMap = new Color[vertices.Length];
 
-        Texture2D texture = new Texture2D(xSize, zSize);
+        Texture2D texture = new Texture2D(xSize + 1, zSize + 1);
         texture.filterMode = FilterMode.Point;
         for (int i = 0, z = 0; z <= zSize; z++)
         {
             for (int x = 0; x <= xSize; x++)
             {
                 float currentHeight = vertices[i].y;
-                for(int j=0 ;j<regions.Length;j++)
+                for(int j=0 ; j<regions.Length; j++)
                 {
                     if(currentHeight <= regions[j].height)
                     {
-                        colourMap[i] = regions[j].colour;
+                        //colourMap[i] = regions[j].colour;
+                        texture.SetPixel(x, z, regions[j].colour);
                         break;
                     }
                 }
                 i++;
             }
         }
-        texture.SetPixels(colourMap);
+        //texture.SetPixels(colourMap);
         texture.Apply();
         return texture;
      }
@@ -302,7 +303,7 @@ public class MeshGenerator : MonoBehaviour
                 tris += 6;
             }
             vert++;
-        }       
+        }
     }
 
     void UpdateMesh()
@@ -315,13 +316,13 @@ public class MeshGenerator : MonoBehaviour
         int i = 0;
         while (i < uvs.Length)
         {
-            uvs[i] = new Vector2(vertices[i].x/xSize, vertices[i].y / zSize );
+            uvs[i] = new Vector2(vertices[i].x/ (float) (xSize + 1), vertices[i].z / (float)(zSize + 1) );
             i++;
         }
         mesh.uv = uvs;
     }
 
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
 
         if (vertices == null)
@@ -331,7 +332,7 @@ public class MeshGenerator : MonoBehaviour
         {
             Gizmos.DrawSphere(vertices[i], .1f);
         }
-    }
+    }*/
     
     [System.Serializable]
     public struct TerrainType
