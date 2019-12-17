@@ -39,10 +39,10 @@ public class MeshGenerator : MonoBehaviour
     [Header("Generation des rivières")]
 
     [Space(10)]
-    public int nbSources;
     public List<Vector2Int> sourceCoordinates;
     public float downhillHeightTolerance;
     public List<List<int>> flowGraphs;
+    public List<List<int>> riverNodes;
 
     [Space(10)]
     public float uphillHeightTolerance;
@@ -72,14 +72,13 @@ public class MeshGenerator : MonoBehaviour
         renderr.material.mainTexture = GenerateTexture();
         CreateShape();
 
-        //sourceCoordinates.Add(new Vector2Int(24, 24));
-        //sourceCoordinates.Add(new Vector2Int(58, 80));
         flowGraphs = new List<List<int>>(sourceCoordinates.Count);
+        riverNodes = new List<List<int>>(sourceCoordinates.Count);
 
-        for(int i = 0; i<sourceCoordinates.Count;i++)
+        for (int i = 0; i<sourceCoordinates.Count;i++)
         {
-            //vertices[sourceCoordinates[i].x + sourceCoordinates[i].y * (xSize + 1)].y *= 2;
             flowGraphs.Add(new List<int>());
+            riverNodes.Add(new List<int>());
             GenerateFlowingGraph(i);
         }
 
@@ -91,7 +90,6 @@ public class MeshGenerator : MonoBehaviour
         renderr.sharedMaterial.mainTexture = GenerateColorTexture();
         GetComponent<MeshFilter>().mesh.RecalculateBounds();
         UpdateMesh();
-
     }
 
     private void GenerateRiverDepth(int flowGraphIndex)
@@ -125,7 +123,6 @@ public class MeshGenerator : MonoBehaviour
                                     }
                                 }
                             }
-
                             nodesSlopes.Add(tempIndex, slope );
                         }
                         else
@@ -143,10 +140,11 @@ public class MeshGenerator : MonoBehaviour
             }
         }
 
+        riverNodes[flowGraphIndex] = new List<int>(nearbyNodes.Keys);
+
         foreach (int index in nearbyNodes.Keys)
         {
-
-            vertices[index] += riverDepth[flowGraphIndex] * nodesSlopes[index] - new Vector3(0,riverDepth[flowGraphIndex] * nearbyNodes[index] / MaxValue,0);
+            vertices[index] += nodesSlopes[index] - new Vector3(0,riverDepth[flowGraphIndex] * nearbyNodes[index] / MaxValue,0);
         }
     }
 
@@ -191,7 +189,7 @@ public class MeshGenerator : MonoBehaviour
             {
                 riverPoints.RemoveAt(0);
                 riverPoints.Add(new Vector2Int(nextIndexX,nextIndexZ));
-                flowGraphs[0].Add(nextIndexX+nextIndexZ * (xSize + 1));
+                flowGraphs[sourceIndex].Add(nextIndexX+nextIndexZ * (xSize + 1));
                 exploredIndexes.Add(nextIndexX+ nextIndexZ * (xSize + 1));
             }
 
@@ -217,7 +215,6 @@ public class MeshGenerator : MonoBehaviour
                 {
                     if(currentHeight <= regions[j].height)
                     {
-                        //colourMap[i] = regions[j].colour;
                         texture.SetPixel(x, z, regions[j].colour);
                         break;
                     }
@@ -225,7 +222,13 @@ public class MeshGenerator : MonoBehaviour
                 i++;
             }
         }
-        //texture.SetPixels(colourMap);
+        for (int i = 0; i < sourceCoordinates.Count; i++)
+        {
+            for (int j = 0; j < riverNodes[i].Count; j++)
+            {
+                texture.SetPixel(riverNodes[i][j] % (xSize + 1), riverNodes[i][j] / (xSize + 1), regions[0].colour);
+            }
+        }
         texture.Apply();
         return texture;
      }
